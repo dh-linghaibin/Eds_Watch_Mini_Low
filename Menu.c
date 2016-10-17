@@ -18,6 +18,7 @@
 #include "Menu.h"
 #include "Led.h"
 #include "Com.h"
+#include "Power.h"//显示电压用
 
 typedef struct DataNode
 {
@@ -72,6 +73,9 @@ void MenuModeSet(u8 cmd) {
         if(menu.mode == 0) {//连续换挡
             menu.continuous = 2;
             LedSetModeFlicker(11);//提示正在自动换档
+        } else if(1 == menu.mode) {//进入后拨微调模式
+            menu.mode = 2;
+            LedSetPower(2);
         }
         break;
         case 0x02://后拨长按进入
@@ -101,21 +105,33 @@ void MenuModeSet(u8 cmd) {
         LedSetModeFlicker(1);
         if(menu.mode == 0) {//加档
             ComSendCmdWatch(front,add_stal,0x00,0x00);//后拨加档
+           // ComSendCmdWatch(add_stal,0x00,0x00,0x00);//直接控制后拨 不经过主控
         } else if(menu.mode == 2) {//后拨微调
             ComSendCmdWatch(front,add_setp,0x00,0x00);//后拨加档
+           // ComSendCmdWatch(add_setp,0x00,0x00,0x00);
         } else if(menu.mode == 3) {//前拨微调
             ComSendCmdWatch(behind,add_setp,0x00,0x00);//后拨加档
         }
+        //PowerGet();
+       // LedSetMode(BattertGetLevel()+1);
+       // LedSetPowerFlag(1);
+        
         break;
         case 0x12://后拨减
         LedSetModeFlicker(1);
         if(menu.mode == 0) {//减档
             ComSendCmdWatch(front,sub_stal,0x00,0x00);//后拨减档
+             //ComSendCmdWatch(sub_stal,0x00,0x00,0x00);//直接控制后拨 不经过主控
         } else if(menu.mode == 2) {//后拨微调
             ComSendCmdWatch(front,sub_setp,0x00,0x00);//后拨加档
+            //ComSendCmdWatch(sub_setp,0x00,0x00,0x00);
         } else if(menu.mode == 3) {//前拨微调
             ComSendCmdWatch(behind,sub_setp,0x00,0x00);//后拨加档
         }
+       // PowerGet();
+       // LedSetMode(BattertGetLevel()+1);
+       // LedSetPowerFlag(1);
+        
         break;
         case 0x13://前拨按下
         LedSetModeFlicker(1);
@@ -164,16 +180,17 @@ void MenuModeSet(u8 cmd) {
         case 0x40://长安5s放开
         if(menu.mode == 0) {
             menu.mode = 1;
+            LedSetPower(1);
         } else if(menu.mode == 1) {//回到正常模式
             menu.mode = 0;
         } else if(menu.mode == 2) {//设置后拨微调档位值
             menu.mode = 0;
             LedSetPower(0);
-            ComSendCmdWatch(front,set_inti,0x00,0x00);
+            ComSendCmdWatch(set_inti,0x00,0x00,0x00);
         } else if(menu.mode == 3) {//设置前拨微调档位值
             menu.mode = 0;
             LedSetPower(0);
-            ComSendCmdWatch(behind,set_inti,0x00,0x00);
+            ComSendCmdWatch(set_inti,0x00,0x00,0x00);
         }
         LedSetModeFlicker(1);
         break;
@@ -196,9 +213,9 @@ void MenuServiceTime(void) {
     } else {
         time_count = 0;
         if(menu.continuous == 1) {
-            ComSendCmdWatch(front,sub_stal,0x00,0x00);//后拨加档
+            ComSendCmdWatch(sub_stal,0x00,0x00,0x00);//后拨加档
         } else if(menu.continuous == 2) {
-            ComSendCmdWatch(front,add_stal,0x00,0x00);//后拨加档
+            ComSendCmdWatch(add_stal,0x00,0x00,0x00);//后拨加档
         }
         if(menu.behind_set_up == 1) {
             if(menu.behind_set_up_count < 19) {

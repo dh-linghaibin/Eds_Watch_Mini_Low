@@ -4,6 +4,9 @@
 #include "Delay.h"
 #include "Time.h"
 
+//PA2 通讯-后拨
+//PA3 通讯-码表
+
 void ComInit(void) {
     //Watch
     PA_DDR_DDR2 = 0;
@@ -151,6 +154,8 @@ void ComClearFlag(void) {
 static u8 com_ask_data[5];//缓存命令l;
 static u8 ask_flag = 0;//是否要返回标志位
 
+static u8 ask_count = 0;//重发计数
+
 void ComSendCmdWatch(u8 cmd,u8 par1,u8 par2,u8 par3) {
     u8 com_t_data[5] = {0,0,0,0,0};//前拨
     //u8 com_t_data2[5] = {0,0,0,0,0};//前拨
@@ -163,7 +168,10 @@ void ComSendCmdWatch(u8 cmd,u8 par1,u8 par2,u8 par3) {
     for(u8 i = 0; i < 5; i++) {//缓存命令
         com_ask_data[i] = com_t_data[i];
     }
-    ask_flag = 1;
+    if( (cmd == add_stal) || (cmd == sub_stal) ) {
+        ask_flag = 1;
+        ask_count = 0;
+    }
     INTOFF
     //ComSend(com_t_data2);
 	ComSend(com_t_data);
@@ -181,6 +189,7 @@ void ComSendCmdWatch(u8 cmd,u8 par1,u8 par2,u8 par3) {
 ************************************************************************************************************/ 
 void ComAskCmd(void) { 
     static u16 time_count = 0;//时间
+    
     if(ask_flag == 1) {//有命令需要返回
         if(time_count < 5000) {
             time_count++;
@@ -188,6 +197,12 @@ void ComAskCmd(void) {
             time_count = 0;
             TimerSetSec(0);//清除时间
             ComSend(com_ask_data);//重新发送
+            if(ask_count < 10) {
+                ask_count++;
+            } else {
+                ask_count = 0;
+                ask_flag = 0;//结束
+            }
         }
     } else {
         time_count = 0;

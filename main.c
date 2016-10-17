@@ -12,6 +12,27 @@
 * 编译环境：C:\Program Files (x86)\IAR Systems\Embedded Workbench 6.5\stm8        
 *
 * 历史信息：
+//PA2 通讯-后拨
+//PA3 通讯-码表
+
+//PB0 后拨电源使能
+
+//PB3电源电压检测
+//PB4电源电压检测使能
+
+//PB5 按键2
+//PB6 状态指示灯
+
+//PB7 按键1
+
+//PD0 上拉使能
+
+//PC0 电源-R
+//PC1 电源-G
+//PC4 电量-B
+
+//PC5 ANT+
+//PC6 ANT-
 *******************************************************************************/
 #include "Eeprom.h"
 #include "Com.h"
@@ -21,8 +42,11 @@
 #include "Menu.h"
 #include "Time.h"
 #include "Delay.h"
+#include "Power.h"
+#include "Ant+.h"
 
 int main( void ) {
+  
     SysInit();
     EeepromInit();
     BuntuInit();
@@ -30,6 +54,11 @@ int main( void ) {
     MenuInit();
     ComInit();
     TimerInit();
+    //PowerInit();
+    /*Ant模块初始化*/
+    //AntInit();
+    /*关闭ANt+模块*/
+   // AntSend(0);
     DelayMs(100);//等待系统上电稳定
     //while(1);
     INTEN
@@ -58,6 +87,7 @@ int main( void ) {
                     break;
                 }
                 break;
+                //已经没有电量了
                 case dce_powe:
                     if(MenuGetMode() == 2) {
                     
@@ -70,8 +100,26 @@ int main( void ) {
                 break;
             }
         } else { //只有在没数据的时候才可以休眠
-            if(TimerGetSec() > 60) {
+            if(TimerGetSec() > 2) {
+//                static u8 add_flag = 0;
+//                static u8 add_num = 0;
+                
                 TimerSetSec(0);
+//                if(add_flag == 0) {
+//                    MenuModeSet(0x11);
+//                } else {
+//                    MenuModeSet(0x12);
+//                }
+//                if(add_num < 10) {
+//                    add_num++;
+//                } else {
+//                    add_num = 0;
+//                    if(add_flag == 0) {
+//                        add_flag = 1;
+//                    } else {
+//                        add_flag = 0;
+//                    }
+//                }
                 BuntuSleep();
             }
         }

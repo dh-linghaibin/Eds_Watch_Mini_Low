@@ -16,12 +16,13 @@
 * 历史信息：
 *******************************************************************************/
 #include "Led.h"
+#include "Time.h"
 
-#define LED_R   PC_ODR_ODR2
-#define LED_G   PC_ODR_ODR4
-#define LED_B   PC_ODR_ODR3 
+#define LED_R   PB_ODR_ODR1
+#define LED_G   PB_ODR_ODR2
+#define LED_B   PB_ODR_ODR3 
 
-#define LED_MODE PB_ODR_ODR1
+#define LED_MODE PC_ODR_ODR0
 /**********************************************函数定义***************************************************** 
 * 函数名称: void LedInit(void) 
 * 输入参数: void 
@@ -31,23 +32,42 @@
 * 日    期: 2016/3/14
 ************************************************************************************************************/ 
 void LedInit(void) { 
-    PB_DDR_DDR1 = 1;//状态指示灯
+    PC_DDR_DDR0 = 1;//状态指示灯
+    PC_CR1_C10 = 1;
+    PC_CR2_C20 = 0;
+    
+    PB_DDR_DDR1 = 1;//电量 RGB
     PB_CR1_C11 = 1;
-    PB_CR2_C21 = 1;
+    PB_CR2_C21 = 0;
     
-    PC_DDR_DDR2 = 1;//电量 RGB
-    PC_CR1_C12 = 1;
-    PC_CR2_C22 = 1;
+    PB_DDR_DDR2 = 1;
+    PB_CR1_C12 = 1;
+    PB_CR2_C22 = 0;
     
-    PC_DDR_DDR3 = 1;
-    PC_CR1_C13 = 1;
-    PC_CR2_C23 = 1;
-    
-    PC_DDR_DDR4 = 1;
-    PC_CR1_C14 = 1;
-    PC_CR2_C22 = 1;
+    PB_DDR_DDR3 = 1;
+    PB_CR1_C13 = 1;
+    PB_CR2_C23 = 0;
     LedSetPower(0);//关闭led
     LED_MODE = 1;
+    //LedSetPowerFlag(10);
+    LedSetModeFlicker(2);//开机闪烁两下
+    
+    
+//    PB_DDR_DDR6 = 0;//状态指示灯
+//    PB_CR1_C16 = 0;
+//    PB_CR2_C26 = 0;
+//    
+//    PC_DDR_DDR0 = 0;//电量 RGB
+//    PC_CR1_C10 = 0;
+//    PC_CR2_C20 = 0;
+//    
+//    PC_DDR_DDR1 = 0;
+//    PC_CR1_C11 = 0;
+//    PC_CR2_C21 = 0;
+//    
+//    PC_DDR_DDR4 = 0;
+//    PC_CR1_C14 = 0;
+//    PC_CR2_C22 = 0;
 }
 /***********************************************变量声明*****************************************************
 * 功    能: 保存电量值  
@@ -167,6 +187,9 @@ void LedTimeService(void) {
                 bit = 0;
             }
             LED_MODE = bit;
+            TimerSetSec(0);
+        } else {
+            LED_MODE = 1;
         }
         if(led_power_flag > 0) {
             static u8 bit = 0;
@@ -178,6 +201,7 @@ void LedTimeService(void) {
                 bit = 0;
                 LedSetPower(led_power_num);
             }
+            TimerSetSec(0);
         }
     }
 }

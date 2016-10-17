@@ -18,12 +18,14 @@
 #include "buntu.h"
 #include "Delay.h"
 #include "Time.h"
+#include "Power.h"
+#include "Led.h"
 
-#define BUNTU_REAR1     PB_IDR_IDR5
-#define BUNTU_REAR2     PB_IDR_IDR4
-#define BUNTU_BEHIND1   PB_IDR_IDR7
-#define BUNTU_BEHIND2   PB_IDR_IDR6
-#define BUNTU_MODE      PB_IDR_IDR0
+#define BUNTU_REAR1     PB_IDR_IDR4
+#define BUNTU_REAR2     PB_IDR_IDR5
+#define BUNTU_BEHIND1   PB_IDR_IDR6
+#define BUNTU_BEHIND2   PB_IDR_IDR7
+#define BUNTU_MODE      PC_IDR_IDR6
 
 #define Mountain_Bike   0x01 //山地车
 #define Road_Bike       0x00//公路车 
@@ -147,9 +149,9 @@ void EXTI_ClearITPendingBit(EXTI_IT_TypeDef EXTI_IT)
 * 日    期: 2016/3/14
 ************************************************************************************************************/ 
 void BuntuInit(void) { 
-    PB_DDR_DDR4 = 0; //前拨减
-    PB_CR1_C14 = 1;
-    PB_CR2_C24 = 0;
+    PB_DDR_DDR7 = 0; //前拨减
+    PB_CR1_C17 = 1;
+    PB_CR2_C27 = 0;
     
     PB_DDR_DDR5 = 0;//前拨加
     PB_CR1_C15 = 1;
@@ -159,22 +161,22 @@ void BuntuInit(void) {
     PB_CR1_C16 = 1;
     PB_CR2_C26 = 0;
     
-    PB_DDR_DDR7 = 0;//后拨加
-    PB_CR1_C17 = 1;
-    PB_CR2_C27 = 0;
+    PB_DDR_DDR4 = 0;//后拨加
+    PB_CR1_C14 = 1;
+    PB_CR2_C24 = 0;
     
-    PB_DDR_DDR0 = 0;//按键
-    PB_CR1_C10 = 1;
-    PB_CR2_C20 = 0;
+    PC_DDR_DDR6 = 0;//按键
+    PC_CR1_C16 = 1;
+    PC_CR2_C26 = 0;
     
-    EXTI_SetPinSensitivity(EXTI_Pin_0,EXTI_Trigger_Falling); 
+    //EXTI_SetPinSensitivity(EXTI_Pin_0,EXTI_Trigger_Falling); 
     EXTI_SetPinSensitivity(EXTI_Pin_4,EXTI_Trigger_Falling); 
     EXTI_SetPinSensitivity(EXTI_Pin_5,EXTI_Trigger_Falling); 
     EXTI_SetPinSensitivity(EXTI_Pin_6,EXTI_Trigger_Falling);
     EXTI_SetPinSensitivity(EXTI_Pin_7,EXTI_Trigger_Falling); 
     
     //这里是给通讯使用的 
-    //EXTI_SetPinSensitivity(EXTI_Pin_2,EXTI_Trigger_Falling); //pa2
+    EXTI_SetPinSensitivity(EXTI_Pin_2,EXTI_Trigger_Falling); //pa2
 }
 
 
@@ -399,12 +401,21 @@ u8 BuntuRead(void) {
 * 日    期: 2016/3/18
 ************************************************************************************************************/ 
 void BuntuSleep(void) { 
+    //PB_CR2_C24 = 1;
+    //PB_CR2_C25 = 1;
+    //PB_CR2_C26 = 1;
+    //PB_CR2_C27 = 1;
+    //PB_CR2_C20 = 1;
+    //PowerSet(0);//关闭后拨电源
     PB_CR2_C24 = 1;
     PB_CR2_C25 = 1;
     PB_CR2_C26 = 1;
     PB_CR2_C27 = 1;
-    PB_CR2_C20 = 1;
+    PC_CR2_C26 = 1;
+  
     PA_CR2_C22 = 0;//关闭通讯中断 只接受按键
+    PowerSetGet(0);
+    LedSetPower(0);//关闭LED
     DelayMs(100);
     MCUSLEEP
 }
@@ -417,11 +428,20 @@ void BuntuSleep(void) {
 * 日    期: 2016/3/18
 ************************************************************************************************************/ 
 void BuntuOpen(void) { 
+    //PB_CR2_C24 = 0;
+   // PowerSet(1);//打开后拨电源
+    PowerSetGet(1);
+    //PB_CR2_C25 = 0;
+    //PB_CR2_C26 = 0;
+    //PB_CR2_C27 = 0;
+    //PB_CR2_C20 = 0;
+    
     PB_CR2_C24 = 0;
     PB_CR2_C25 = 0;
     PB_CR2_C26 = 0;
     PB_CR2_C27 = 0;
-    PB_CR2_C20 = 0;
+    PC_CR2_C26 = 0;
+    
     EXTI_SR1 = 0xff;
     PA_CR2_C22 = 1;//打开通讯中断 只接受按键
 }

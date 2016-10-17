@@ -17,12 +17,21 @@
 *******************************************************************************/
 #include "Time.h"
 
+#define __BASE_CNT_MAX 250 //约2ms 中断一次  
+
 void TimerInit(void) {
-    CLK_PCKENR = 0x04;
+    CLK_PCKENR1 = 0x04;
+    //CLK_PCKENR1 = 0x04;
     TIM4_IER = 0x01;
     TIM4_PSCR = 0x07;
     TIM4_ARR = 0x7c; 
     TIM4_CR1 = 0x01;
+//    TIM4_CNTR = 0;
+//    TIM4_PSCR = 4; //16分频
+//    TIM4_ARR = __BASE_CNT_MAX ;
+//    TIM4_EGR = 0x01;
+//    TIM4_IER   = 0x01;//使能溢出中断
+//    TIM4_CR1  = 0x11 ;//开启定时器
 }
 
 static u16 sec_flag = 0;

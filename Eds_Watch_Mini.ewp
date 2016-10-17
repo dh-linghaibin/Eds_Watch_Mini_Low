@@ -17,7 +17,7 @@
         <debug>1</debug>
         <option>
           <name>GenDeviceSelectMenu</name>
-          <state>STM8L101F3P	STM8L101F3P</state>
+          <state>STM8L051F3	STM8L051F3</state>
         </option>
         <option>
           <name>GenCodeModel</name>
@@ -597,7 +597,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\config\lnkstm8l101f3.icf</state>
+          <state>$TOOLKIT_DIR$\config\lnkstm8l051f3.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -1569,6 +1569,9 @@
     </settings>
   </configuration>
   <file>
+    <name>$PROJ_DIR$\Ant+.c</name>
+  </file>
+  <file>
     <name>$PROJ_DIR$\buntu.c</name>
   </file>
   <file>
@@ -1588,6 +1591,9 @@
   </file>
   <file>
     <name>$PROJ_DIR$\Menu.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\Power.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$\Sys.c</name>
