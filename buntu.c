@@ -21,8 +21,8 @@
 #include "Power.h"
 #include "Led.h"
 
-#define BUNTU_REAR1     PB_IDR_IDR4
-#define BUNTU_REAR2     PB_IDR_IDR5
+#define BUNTU_REAR1     PB_IDR_IDR5
+#define BUNTU_REAR2     PB_IDR_IDR4
 #define BUNTU_BEHIND1   PB_IDR_IDR6
 #define BUNTU_BEHIND2   PB_IDR_IDR7
 #define BUNTU_MODE      PC_IDR_IDR6
